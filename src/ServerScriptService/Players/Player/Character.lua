@@ -1,4 +1,5 @@
 local RunService = game:GetService("RunService")
+local PhysicsService = game:GetService("PhysicsService")
 
 local KDKit = require(game.ReplicatedFirst:WaitForChild("KDKit"))
 require = KDKit.LazyRequire
@@ -22,11 +23,11 @@ function Character:__init(player)
 
         self.instance = character
 
-        local ancestryChangedConnection
-        local function ancestryChanged()
-            character.Parent = Character.folder
-        end
-        ancestryChangedConnection = self.instanceMaid:give(character.AncestryChanged:Connect(ancestryChanged))
+        self.instanceMaid:give(character.AncestryChanged:Connect(function()
+            task.defer(function()
+                character.Parent = Character.folder
+            end)
+        end))
 
         local childAddedConnection
         local function childAdded(child: Instance)
@@ -37,6 +38,10 @@ function Character:__init(player)
                     self.instanceMaid:clean()
                     self:onDied(character, humanoid)
                 end))
+            end
+
+            if child:IsA("BasePart") then
+                PhysicsService:SetPartCollisionGroup(child, "characters")
             end
         end
         childAddedConnection = self.instanceMaid:give(character.ChildAdded:Connect(childAdded))

@@ -1,46 +1,19 @@
 local KDKit = require(game.ReplicatedFirst:WaitForChild("KDKit"))
 
-local Plot = KDKit.Class.new("Player.Base")
-Plot.static.folder = workspace:WaitForChild("PLOTS")
-
-KDKit.Preload:ensureChildren(Plot.folder)
-Plot.static.instances = Plot.folder:GetChildren()
-
-function Plot.static:claimNext(player: "Class.Player"): Instance
-    local available = {}
-    for _, instance in Plot.instances do
-        if instance.Name == "unclaimed" then
-            table.insert(available, instance)
-        end
-    end
-
-    if not next(available) then
-        task.wait(1)
-        return self:claimNext()
-    end
-
-    local plot = KDKit.Random:linearChoice(available)
-    assert(player:isValid(), "Player became invalid before being able to claim a plot")
-
-    plot.Name = player.id
-
-    return plot
-end
-
-function Plot.static:unclaim(plot: Instance): nil
-    plot.Name = "unclaimed"
-end
+local Plot = KDKit.Class.new("Player.Plot")
+Plot.static.Manager = require(script:WaitForChild("Manager"))
 
 function Plot:__init(player: "Class.Player")
+    self.maid = KDKit.Maid.new()
+
     self.player = player
-    self.instance = Plot:claimNext(self.player)
+
+    self.manager = Plot.Manager:claim(self)
+    self.maid:give(self.manager.unclaim, self.manager)
 
     self.loaded = false -- true upon first import
     self.rebirths = 0
     self.data = {}
-
-    self.maid = KDKit.Maid.new()
-    self.maid:give(Plot.unclaim, Plot, self.instance)
 end
 
 function Plot:load(data, rebirths)
@@ -67,12 +40,20 @@ function Plot:setMoney(n)
     self.player.stats:setMoney(n)
 end
 
+function Plot:earnMoney(n)
+    self:setMoney(self.data.money + n)
+end
+
 function Plot:grantPurchase(p)
     if not table.find(self.data.purchases, p) then
         table.insert(self.data.purchases, p)
     end
 
     print("granting purchase:", p)
+end
+
+function Plot:getSpawnPoint(): CFrame
+    return self.manager.spawnPoint
 end
 
 function Plot:destroy()

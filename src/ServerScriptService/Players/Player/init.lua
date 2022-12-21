@@ -78,6 +78,7 @@ function Player:initialize(): nil
 
         if user_success and player_success then
             self.plot:load(self.remote.player.data, self.remote.player.rebirths)
+            self.character:spawn()
             self.state = Player.STATES.PLAYING
             KDKit.Remotes.loaded(self.instance)
         else
