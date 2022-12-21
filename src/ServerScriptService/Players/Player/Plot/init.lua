@@ -20,12 +20,16 @@ function Plot:load(data, rebirths)
     self.data = { money = data.money or 0, purchases = data.purchases or {} }
     self.rebirths = rebirths or 0
 
-    self:setRebirths(rebirths)
-
     self:setMoney(data.money)
-    for _, purchase in self.data.purchases or {} do
-        self:grantPurchase(purchase)
+
+    KDKit.Utils:isort(self.data.purchases, function(k: string)
+        return { select(2, k:gsub("%.", "")), k }
+    end)
+    for _, purchase in self.data.purchases do
+        self.manager:purchase(purchase)
     end
+
+    self:setRebirths(rebirths)
 
     self.loaded = true
 end
@@ -44,12 +48,25 @@ function Plot:earnMoney(n)
     self:setMoney(self.data.money + n)
 end
 
-function Plot:grantPurchase(p)
-    if not table.find(self.data.purchases, p) then
-        table.insert(self.data.purchases, p)
+function Plot:spendMoney(n)
+    if self.data.money >= n then
+        self:setMoney(self.data.money - n)
+        return true
     end
 
-    print("granting purchase:", p)
+    return false
+end
+
+function Plot:purchase(name: string, price: number)
+    if table.find(self.data.purchases, name) then
+        self.manager:purchase(name)
+        return
+    end
+
+    if self:spendMoney(price) then
+        table.insert(self.data.purchases, name)
+        self.manager:purchase(name)
+    end
 end
 
 function Plot:getSpawnPoint(): CFrame

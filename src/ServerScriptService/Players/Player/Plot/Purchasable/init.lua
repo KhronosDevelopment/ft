@@ -10,6 +10,10 @@ function Purchasable:__init(
     self.manager = manager
     self.instance = instance
     self.parent = parent
+    self.price = self.instance:GetAttribute("price")
+    if not self.price then
+        error("missing price attribute for purchasable: " .. self.instance:GetFullName())
+    end
 
     self.name = if parent then parent.name .. "." .. instance.Name else instance.Name
 

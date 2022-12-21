@@ -56,11 +56,13 @@ function Item:disable()
         self.connection = nil
     end
 
-    for fruit, _ in self.droppedFruits do
-        pcall(fruit.Destroy, fruit)
-    end
+    if self.type == "dropper" then
+        for fruit, _ in self.droppedFruits do
+            pcall(fruit.Destroy, fruit)
+        end
 
-    table.clear(self.droppedFruits)
+        table.clear(self.droppedFruits)
+    end
 end
 
 function Item:enable()
@@ -108,6 +110,7 @@ function Item:performDrop()
     for _, descendant in fruit:GetDescendants() do
         if descendant:IsA("BasePart") then
             PhysicsService:SetPartCollisionGroup(descendant, "fruits")
+            descendant:SetNetworkOwner(self.purchasable.manager.owner.player.instance)
         end
     end
 

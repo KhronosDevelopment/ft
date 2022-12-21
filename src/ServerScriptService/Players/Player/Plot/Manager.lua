@@ -30,6 +30,8 @@ function Manager:__init(instance: Model)
         local value = fruit:GetAttribute("value")
         fruit:Destroy()
 
+        self.instance.moneyGui.container.label.Text = "+$" .. KDKit.Humanize:money(value)
+
         self.owner:earnMoney(value)
     end)
 
@@ -53,9 +55,13 @@ function Manager:addPurchasable(purchasable: "Class.Player.Plot.Purchasable")
         end
 
         if part:IsDescendantOf(self.owner.player.character.instance) then
-            purchasable:purchase()
+            self.owner:purchase(purchasable.name, purchasable.price)
         end
     end)
+end
+
+function Manager:purchase(name)
+    self.purchasablesByName[name]:purchase()
 end
 
 function Manager:claim(by: "Class.Player.Plot"): "Class.Player.Plot.Manager"

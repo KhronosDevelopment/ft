@@ -13,13 +13,13 @@ function Stats:__init(player)
     self.instance = self.maid:give(Instance.new("Folder", self.player.instance))
     self.instance.Name = "leaderstats"
 
-    Instance.new("NumberValue", self.instance).Name = "Money"
+    Instance.new("IntValue", self.instance).Name = "Money"
     Instance.new("IntValue", self.instance).Name = "Rebirths"
 end
 
 function Stats:setMoney(value)
     self.rt.money = value
-    self.instance.Money.Value = value
+    self.instance.Money.Value = math.floor(value)
 end
 
 function Stats:setRebirths(rebirths)
