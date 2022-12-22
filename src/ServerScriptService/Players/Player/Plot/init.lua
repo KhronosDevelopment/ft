@@ -97,6 +97,7 @@ end
 function Plot:rebirth()
     self:setRebirths(self.rebirths + 1)
     self:setMoney(0)
+    table.clear(self.data.purchases)
     self.manager:clear(false)
 end
 
