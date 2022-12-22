@@ -1,4 +1,7 @@
 local LocalizationService = game:GetService("LocalizationService")
+local DeveloperProducts = require(game:GetService("ServerScriptService"):WaitForChild("DeveloperProducts"))
+local DeveloperProductsConfiguration =
+    require(game:GetService("ServerStorage"):WaitForChild("DeveloperProducts.Configuration"))
 
 local KDKit = require(game.ReplicatedFirst:WaitForChild("KDKit"))
 
@@ -78,6 +81,11 @@ function Player:initialize(): nil
 
         if user_success and player_success then
             self.plot:load(self.remote.player.data, self.remote.player.rebirths)
+            for name, product in DeveloperProductsConfiguration do
+                if DeveloperProducts:playerPurchased(self, name) then
+                    self:awardDeveloperProduct(product, false)
+                end
+            end
             self.character:spawn()
             self.state = Player.STATES.PLAYING
             KDKit.Remotes.loaded(self.instance)
@@ -138,6 +146,14 @@ end
 
 function Player:getSpawnPoint(): nil | CFrame | Vector3
     return self.plot:getSpawnPoint()
+end
+
+function Player:awardDeveloperProduct(product: DeveloperProductsConfiguration.Config, afterPurchase: boolean): boolean
+    if not self.plot then
+        return false
+    end
+
+    return self.plot:awardDeveloperProduct(product, afterPurchase)
 end
 
 return Player

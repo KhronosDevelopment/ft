@@ -1,3 +1,5 @@
+local DeveloperProductsConfiguration =
+    require(game:GetService("ServerStorage"):WaitForChild("DeveloperProducts.Configuration"))
 local KDKit = require(game.ReplicatedFirst:WaitForChild("KDKit"))
 
 local Plot = KDKit.Class.new("Player.Plot")
@@ -14,6 +16,16 @@ function Plot:__init(player: "Class.Player")
     self.loaded = false -- true upon first import
     self.rebirths = 0
     self.data = {}
+end
+
+function Plot:getCashMultiplier()
+    local m = 1.5 ^ self.rebirths
+
+    if self.manager.purchasablesByName["doublecash"].purchased then
+        m *= 2
+    end
+
+    return m
 end
 
 function Plot:load(data, rebirths)
@@ -42,10 +54,11 @@ end
 function Plot:setMoney(n)
     self.data.money = n
     self.player.stats:setMoney(n)
+    self.manager:onMoneyChanged(n)
 end
 
 function Plot:earnMoney(n)
-    self:setMoney(self.data.money + n)
+    self:setMoney(self.data.money + n * self:getCashMultiplier())
 end
 
 function Plot:spendMoney(n)
@@ -71,6 +84,10 @@ end
 
 function Plot:getSpawnPoint(): CFrame
     return self.manager.spawnPoint
+end
+
+function Plot:awardDeveloperProduct(product: DeveloperProductsConfiguration.Config, afterPurchase: boolean): boolean
+    return self.manager:awardDeveloperProduct(product, afterPurchase)
 end
 
 function Plot:destroy()

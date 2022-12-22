@@ -1,3 +1,6 @@
+local DeveloperProducts = require(game:GetService("ServerScriptService"):WaitForChild("DeveloperProducts"))
+local DeveloperProductsConfiguration =
+    require(game:GetService("ServerStorage"):WaitForChild("DeveloperProducts.Configuration"))
 local KDKit = require(game.ReplicatedFirst:WaitForChild("KDKit"))
 
 local Purchasable = require(script.Parent:WaitForChild("Purchasable"))
@@ -30,7 +33,9 @@ function Manager:__init(instance: Model)
         local value = fruit:GetAttribute("value")
         fruit:Destroy()
 
-        self.instance.moneyGui.container.label.Text = "+$" .. KDKit.Humanize:money(value)
+        self.instance.moneyGui.container.label.Text = "+$"
+            .. KDKit.Humanize:money(value * self.owner:getCashMultiplier())
+        self.instance.moneyGui:SetAttribute("n", (self.instance.moneyGui:GetAttribute("n") or 0) + 1)
 
         self.owner:earnMoney(value)
     end)
@@ -54,7 +59,13 @@ function Manager:addPurchasable(purchasable: "Class.Player.Plot.Purchasable")
             return
         end
 
-        if part:IsDescendantOf(self.owner.player.character.instance) then
+        if not part:IsDescendantOf(self.owner.player.character.instance) then
+            return
+        end
+
+        if purchasable.developerProduct and not purchasable.playerHasDeveloperProduct then
+            DeveloperProducts:prompt(self.owner.player, purchasable.developerProduct.name)
+        else
             self.owner:purchase(purchasable.name, purchasable.price)
         end
     end)
@@ -93,6 +104,29 @@ end
 
 function Manager:clear()
     print("clearing")
+end
+
+function Manager:awardDeveloperProduct(product: DeveloperProductsConfiguration.Config, afterPurchase: boolean): boolean
+    if product.purchases then
+        local purchasable = self.purchasablesByName[product.purchases]
+        purchasable:setPlayerHasDeveloperProduct(true)
+
+        if afterPurchase and purchasable:purchasable() then
+            purchasable:purchase()
+        end
+
+        return true
+    end
+
+    return false
+end
+
+function Manager:onMoneyChanged(money: number)
+    for name, purchasable in self.purchasablesByName do
+        if purchasable.purchasable then
+            purchasable:setAffordable(purchasable.price <= money)
+        end
+    end
 end
 
 KDKit.Preload:ensureDescendants(Manager.folder)

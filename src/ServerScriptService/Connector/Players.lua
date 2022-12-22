@@ -1,5 +1,5 @@
-local KDKit = require(game:WaitForChild("ReplicatedFirst"):WaitForChild("KDKit"))
-local Players = require(game:WaitForChild("ServerScriptService"):WaitForChild("Players"))
+local KDKit = require(game:GetService("ReplicatedFirst"):WaitForChild("KDKit"))
+local Players = require(game:GetService("ServerScriptService"):WaitForChild("Players"))
 
 Players.folder.PlayerAdded:Connect(function(playerInstance)
     KDKit.Utils:ensure(function(failed, traceback)
