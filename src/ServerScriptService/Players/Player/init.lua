@@ -89,6 +89,7 @@ function Player:initialize(): nil
             self.rt.rebirthCost = self:getRebirthCost()
             self.character:spawn()
             self.state = Player.STATES.PLAYING
+            self:beginAutosaveCycle()
             KDKit.Remotes.loaded(self.instance)
         else
             if not user_success then
@@ -172,6 +173,15 @@ function Player:rebirth()
     end
 
     return false
+end
+
+function Player:beginAutosaveCycle()
+    task.defer(function()
+        while self:isPlaying() do
+            self:save()
+            task.wait(60)
+        end
+    end)
 end
 
 return Player
