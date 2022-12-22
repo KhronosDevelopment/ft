@@ -94,4 +94,9 @@ function Plot:destroy()
     self.maid:clean()
 end
 
+function Plot:rebirth()
+    self:setRebirths(self.rebirths + 1)
+    self.manager:clear(false)
+end
+
 return Plot

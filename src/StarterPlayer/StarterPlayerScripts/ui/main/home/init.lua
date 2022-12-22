@@ -2,6 +2,10 @@ local KDKit = require(game:GetService("ReplicatedFirst"):WaitForChild("KDKit"))
 local app = require(script.Parent)
 local page = app:getPage("home")
 
+page.buttons.rebirth = KDKit.GUI.Button.new(page.instance.container.rebirth.button, function()
+    app:goTo("rebirth", "BUTTON_PRESS")
+end)
+
 local firstPositiveDeltaAt = math.huge
 local positiveDeltasInTheLastMinute = {}
 local function updateMoneyPerSecond()

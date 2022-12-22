@@ -57,4 +57,13 @@ function Players:left(playerInstance: Player): nil
     player:left()
 end
 
+function Players:rebirth(playerInstance: Player): boolean
+    local player = self:get(playerInstance)
+    if not player or not player:isValid() then
+        error("Invalid player.")
+    end
+
+    return player:rebirth()
+end
+
 return Players

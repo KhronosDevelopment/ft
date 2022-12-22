@@ -99,11 +99,13 @@ end
 
 function Manager:unclaim()
     self.owner = nil
-    self:clear()
+    self:clear(true)
 end
 
-function Manager:clear()
-    print("clearing")
+function Manager:clear(newPlayer)
+    for name, purchasable in self.purchasablesByName do
+        purchasable:unPurchase(newPlayer)
+    end
 end
 
 function Manager:awardDeveloperProduct(product: DeveloperProductsConfiguration.Config, afterPurchase: boolean): boolean

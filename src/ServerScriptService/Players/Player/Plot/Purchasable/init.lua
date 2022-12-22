@@ -153,4 +153,12 @@ function Purchasable:setPlayerHasDeveloperProduct(playerHasDeveloperProduct)
     self:restyleButton()
 end
 
+function Purchasable:reset(newPlayer)
+    self:unPurchase()
+    self:setAffordable(self.price <= 0)
+    if newPlayer then
+        self:setPlayerHasDeveloperProduct(false)
+    end
+end
+
 return Purchasable

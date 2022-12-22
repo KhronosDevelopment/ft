@@ -1,7 +1,7 @@
 local KDKit = require(game:GetService("ReplicatedFirst"):WaitForChild("KDKit"))
 local Players = require(game:GetService("ServerScriptService"):WaitForChild("Players"))
 
-Players.folder.PlayerAdded:Connect(function(playerInstance)
+Players.folder.PlayerAdded:Connect(function(playerInstance: Player)
     KDKit.Utils:ensure(function(failed, traceback)
         if failed then
             (KDKit.API.log / "error"):dpePOST(playerInstance, {
@@ -16,7 +16,7 @@ Players.folder.PlayerAdded:Connect(function(playerInstance)
     end, Players.joined, Players, playerInstance)
 end)
 
-Players.folder.PlayerRemoving:Connect(function(playerInstance)
+Players.folder.PlayerRemoving:Connect(function(playerInstance: Player)
     KDKit.Utils:ensure(function(failed, traceback)
         if failed then
             (KDKit.API.log / "error"):dpePOST(playerInstance, {
@@ -29,6 +29,10 @@ Players.folder.PlayerRemoving:Connect(function(playerInstance)
             })
         end
     end, Players.left, Players, playerInstance)
+end)
+
+KDKit.Remotes.rebirth:connect(function(playerInstance: Player): boolean
+    return Players:rebirth(playerInstance)
 end)
 
 return Players

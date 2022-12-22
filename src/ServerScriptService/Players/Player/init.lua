@@ -86,6 +86,7 @@ function Player:initialize(): nil
                     self:awardDeveloperProduct(product, false)
                 end
             end
+            self.rt.rebirthCost = self:getRebirthCost()
             self.character:spawn()
             self.state = Player.STATES.PLAYING
             KDKit.Remotes.loaded(self.instance)
@@ -154,6 +155,23 @@ function Player:awardDeveloperProduct(product: DeveloperProductsConfiguration.Co
     end
 
     return self.plot:awardDeveloperProduct(product, afterPurchase)
+end
+
+function Player:getRebirthCost()
+    return 10 + self.plot.rebirths
+end
+
+function Player:rebirth()
+    if not self.plot or not self.plot.data then
+        return false
+    end
+    if self.plot:spendMoney(self:getRebirthCost()) then
+        self.plot:rebirth()
+        self.rt.rebirthCost = self:getRebirthCost()
+        return true
+    end
+
+    return false
 end
 
 return Player
