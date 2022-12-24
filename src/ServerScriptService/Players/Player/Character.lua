@@ -33,6 +33,7 @@ function Character:__init(player)
         local function childAdded(child: Instance)
             if child:IsA("Humanoid") then
                 local humanoid: Humanoid = child
+                humanoid.WalkSpeed = 20
                 self.instanceMaid:clean(childAddedConnection)
                 self.instanceMaid:give(humanoid.Died:Connect(function()
                     self.instanceMaid:clean()
