@@ -79,6 +79,7 @@ function Plot:purchase(name: string, price: number)
     if self:spendMoney(price) then
         table.insert(self.data.purchases, name)
         self.manager:purchase(name)
+        KDKit.Remotes.madePurchase(self.player.instance)
     end
 end
 
