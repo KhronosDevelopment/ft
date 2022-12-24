@@ -7,12 +7,15 @@ page.buttons.close = KDKit.GUI.Button
         app:goBack("BUTTON_PRESS")
     end)
     :bind("X")
+    :bind(Enum.KeyCode.ButtonB)
 
-page.buttons.submit = KDKit.GUI.Button.new(page.instance.window.inner.submit.button, function()
-    if KDKit.Remotes.rebirth() then
-        app:goBack("BUTTON_PRESS")
-    end
-end)
+page.buttons.submit = KDKit.GUI.Button
+    .new(page.instance.window.inner.submit.button, function()
+        if KDKit.Remotes.rebirth() then
+            app:goBack("BUTTON_PRESS")
+        end
+    end)
+    :bind(Enum.KeyCode.ButtonX)
 
 local function updateSubmitEnabled()
     if page.opened and (app.common.LRT.rebirthCost() or 1000000) <= (app.common.LRT.stats.money() or 0) then
