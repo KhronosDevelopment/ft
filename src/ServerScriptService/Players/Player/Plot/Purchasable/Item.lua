@@ -121,7 +121,7 @@ function Item:performDrop()
     local fruit = self.fruit:Clone()
     fruit:SetAttribute("owner", self.purchasable.manager.owner.player.id)
     fruit:SetAttribute("value", self.value)
-    fruit:SetAttribute("delete", os.clock() + 1)
+    fruit:SetAttribute("delete", os.clock() + 600)
     fruit.Parent = Item.fruitFolder
     self.droppedFruits[fruit] = true
 
