@@ -7,6 +7,11 @@ local Purchasable = require(script.Parent:WaitForChild("Purchasable"))
 
 local Manager = KDKit.Class.new("Player.Plot.Manager")
 Manager.static.folder = workspace:WaitForChild("PLOTS")
+while not Manager.template do
+    Manager.static.template = workspace:WaitForChild("PLOT_TEMPLATE", 0.1)
+        or game:GetService("ServerStorage"):WaitForChild("PLOT_TEMPLATE", 0.1)
+end
+Manager.static.list = {}
 
 function Manager:__init(instance: Model)
     self.instance = instance
@@ -35,7 +40,7 @@ function Manager:__init(instance: Model)
 
         self.instance.moneyGui.container.label.Text = "+$"
             .. KDKit.Humanize:money(value * self.owner:getCashMultiplier())
-        self.instance.moneyGui:SetAttribute("n", (self.instance.moneyGui:GetAttribute("n") or 0) + 1)
+        self.instance:SetAttribute("fruitSold", (self.instance:GetAttribute("fruitSold") or 0) + 1)
 
         self.owner:earnMoney(value)
     end)
@@ -131,7 +136,15 @@ function Manager:onMoneyChanged(money: number)
     end
 end
 
+Manager.template.Parent = game:GetService("ServerStorage")
 KDKit.Preload:ensureDescendants(Manager.folder)
-Manager.static.list = KDKit.Utils:map(Manager.new, Manager.folder:GetChildren())
+KDKit.Preload:ensureDescendants(Manager.template)
+for _, root in Manager.folder:GetChildren() do
+    local instance = Manager.template:Clone()
+    instance:PivotTo(root.CFrame)
+    instance.Parent = Manager.folder
+    table.insert(Manager.static.list, Manager.new(instance))
+    root:Destroy()
+end
 
 return Manager

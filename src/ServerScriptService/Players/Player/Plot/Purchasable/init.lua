@@ -52,7 +52,7 @@ function Purchasable:__init(
             self.button.Transparency = 1
 
             local visual = Purchasable.buttonTemplate:Clone() :: Model
-            visual:PivotTo(self.button.CFrame * CFrame.Angles(0, 0, -math.pi / 2))
+            visual:PivotTo(self.button.CFrame)
             visual.Name = "visual"
             visual.Parent = self.button
             visual.gui.title.Text = self.humanName
@@ -111,11 +111,17 @@ end
 
 function Purchasable:restyleButton()
     if self.developerProduct and not self.playerHasDeveloperProduct then
+        self.button.visual.gui.price.Text = "R$" .. KDKit.Humanize:money(self.developerProduct.price)
+        self.button.visual.gui.price.TextColor3 = Color3.fromRGB(56, 208, 54)
+
         self.button.visual.neon.Material = Enum.Material.Neon
         self.button.visual.neon.Color = Color3.fromRGB(171, 122, 52)
 
-        self.button.visual.gui.price.Text = "R$" .. KDKit.Humanize:money(self.developerProduct.price)
-        self.button.visual.gui.price.TextColor3 = Color3.fromRGB(56, 208, 54)
+        self.button.visual.neon.light.PointLight.Color = Color3.fromRGB(171, 122, 52)
+        self.button.visual.neon.light.PointLight.Brightness = 1
+
+        self.button.visual.neon.beam.Beam.Color = ColorSequence.new(Color3.fromRGB(171, 122, 52))
+        self.button.visual.neon.beam.Beam.Brightness = 1
     else
         if self.price == 0 then
             self.button.visual.gui.price.Text = "FREE"
@@ -128,9 +134,18 @@ function Purchasable:restyleButton()
         if self.affordable then
             self.button.visual.neon.Material = Enum.Material.Neon
             self.button.visual.neon.Color = Color3.fromRGB(147, 171, 142)
+
+            self.button.visual.neon.light.PointLight.Color = Color3.fromRGB(156, 255, 138)
+            self.button.visual.neon.light.PointLight.Brightness = 1
+
+            self.button.visual.neon.beam.Beam.Color = ColorSequence.new(Color3.fromRGB(199, 255, 156))
+            self.button.visual.neon.beam.Beam.Brightness = 1
         else
             self.button.visual.neon.Material = Enum.Material.Glass
             self.button.visual.neon.Color = Color3.fromRGB(70, 81, 67)
+
+            self.button.visual.neon.beam.Beam.Brightness = 0
+            self.button.visual.neon.light.PointLight.Brightness = 0
         end
     end
 end

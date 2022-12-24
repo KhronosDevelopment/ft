@@ -70,7 +70,7 @@ function Item:enable()
     self.enabled = true
 
     if self.type == "dropper" then
-        local elapsed = 0
+        local elapsed = math.huge -- so that the first drop is instant
         self.connection = game:GetService("RunService").Heartbeat:Connect(function(dt)
             elapsed += dt
 
@@ -116,6 +116,7 @@ function Item:performDrop()
 
     task.delay(180, function()
         if fruit.Parent then
+            warn("DELETED AFTER 3 MINUTES")
             fruit:Destroy()
         end
     end)
