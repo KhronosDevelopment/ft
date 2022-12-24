@@ -130,7 +130,7 @@ function Manager:awardDeveloperProduct(product: DeveloperProductsConfiguration.C
         purchasable:setPlayerHasDeveloperProduct(true)
 
         if afterPurchase and purchasable:purchasable() then
-            purchasable:purchase()
+            self.owner:purchase(purchasable.name, 0)
         end
 
         return true
