@@ -7,9 +7,15 @@ local Purchasable = require(script.Parent:WaitForChild("Purchasable"))
 
 local Manager = KDKit.Class.new("Player.Plot.Manager")
 Manager.static.folder = workspace:WaitForChild("PLOTS")
-while not Manager.template do
-    Manager.static.template = workspace:WaitForChild("PLOT_TEMPLATE", 0.1)
-        or game:GetService("ServerStorage"):WaitForChild("PLOT_TEMPLATE", 0.1)
+while true do
+    Manager.static.template = workspace:FindFirstChild("PLOT_TEMPLATE")
+        or game:GetService("ServerStorage"):WaitForChild("PLOT_TEMPLATE")
+
+    if Manager.template then
+        break
+    else
+        task.wait(0.1)
+    end
 end
 Manager.static.list = {}
 
