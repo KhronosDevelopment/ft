@@ -1,5 +1,4 @@
 local PhysicsService = game:GetService("PhysicsService")
-local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
 
 local KDKit = require(game.ReplicatedFirst:WaitForChild("KDKit"))
@@ -122,6 +121,7 @@ function Item:performDrop()
     local fruit = self.fruit:Clone()
     fruit:SetAttribute("owner", self.purchasable.manager.owner.player.id)
     fruit:SetAttribute("value", self.value)
+    fruit:SetAttribute("delete", os.clock() + 1)
     fruit.Parent = Item.fruitFolder
     self.droppedFruits[fruit] = true
 
@@ -132,7 +132,6 @@ function Item:performDrop()
         end
     end
 
-    Debris:AddItem(fruit, 300)
     debug.profileend()
 end
 
@@ -150,6 +149,17 @@ end
 
 RunService.Heartbeat:Connect(function()
     Item:cycle()
+end)
+
+task.defer(function()
+    while task.wait(5) do
+        local now = os.clock()
+        for _, fruit in Item.fruitFolder:GetChildren() do
+            if (fruit:GetAttribute("delete") or math.huge) <= now then
+                pcall(fruit.Destroy, fruit)
+            end
+        end
+    end
 end)
 
 return Item
