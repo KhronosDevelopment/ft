@@ -40,6 +40,7 @@ end
 function Players:left(playerInstance: Player): nil
     local id = self:getUserId(playerInstance)
     local player = self.list[id]
+    self.list[id] = nil
 
     if not player then
         -- indicative that Player:joined() errored.
