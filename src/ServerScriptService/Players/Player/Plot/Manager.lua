@@ -83,7 +83,7 @@ end
 function Manager:claim(by: "Class.Player.Plot"): "Class.Player.Plot.Manager"
     if self == Manager then
         -- statically called
-        for _, manager in self.list do
+        for _, manager in KDKit.Random:shuffle(self.list) do
             if not manager.owner then
                 manager:claim(by)
                 return manager
@@ -109,7 +109,12 @@ end
 
 function Manager:clear(newPlayer)
     for name, purchasable in self.purchasablesByName do
-        purchasable:unPurchase(newPlayer)
+        purchasable:reset(newPlayer)
+    end
+
+    -- because this requires top-down information, we need to re-render again
+    for name, purchasable in self.purchasablesByName do
+        purchasable:restyleButton()
     end
 end
 
@@ -141,8 +146,18 @@ KDKit.Preload:ensureDescendants(Manager.folder)
 KDKit.Preload:ensureDescendants(Manager.template)
 for _, root in Manager.folder:GetChildren() do
     local instance = Manager.template:Clone()
+    local orientation: CFrame = root.CFrame - root.CFrame.Position
+
     instance:PivotTo(root.CFrame)
     instance.Parent = Manager.folder
+    instance.Name = "plot"
+
+    for _, descendant in instance:GetDescendants() do
+        if descendant:IsA("BasePart") then
+            descendant.AssemblyLinearVelocity = orientation:PointToWorldSpace(descendant.AssemblyLinearVelocity)
+        end
+    end
+
     table.insert(Manager.static.list, Manager.new(instance))
     root:Destroy()
 end
