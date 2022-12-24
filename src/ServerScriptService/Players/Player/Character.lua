@@ -21,10 +21,12 @@ function Character:__init(player)
         end
         self.instanceMaid = self.maid:give(KDKit.Maid.new())
 
+        self.instanceMaid:give(pcall, character.Destroy, character)
+
         self.instance = character
 
         self.instanceMaid:give(character.AncestryChanged:Connect(function()
-            task.defer(function()
+            task.defer(pcall, function()
                 character.Parent = Character.folder
             end)
         end))
