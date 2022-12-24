@@ -83,7 +83,6 @@ function Purchasable:unPurchase()
     self.purchased = false
 
     self.item:disable()
-    self.button.Parent = if self:purchasable() then workspace else nil
     self:restyleButton()
 
     for _, child in self.children do
@@ -110,6 +109,8 @@ function Purchasable:purchasable()
 end
 
 function Purchasable:restyleButton()
+    self.button.Parent = if self:purchasable() then workspace else nil
+
     if self.developerProduct and not self.playerHasDeveloperProduct then
         self.button.visual.gui.price.Text = "R$" .. KDKit.Humanize:money(self.developerProduct.price)
         self.button.visual.gui.price.TextColor3 = Color3.fromRGB(56, 208, 54)
