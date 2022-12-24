@@ -19,7 +19,7 @@ function Plot:__init(player: "Class.Player")
 end
 
 function Plot:getCashMultiplier()
-    local m = 1.5 ^ self.rebirths
+    local m = 2 ^ self.rebirths
 
     if self.manager.purchasablesByName["doublecash"].purchased then
         m *= 2

@@ -32,12 +32,12 @@ end)
 app.common.LRT.stats.rebirths(function(value)
     value = value or 0
 
-    local bonus = 1.5 ^ value - 1
+    local bonus = 2 ^ value
     page.instance.window.inner.label.Text = (
-        "Rebirthing allows you to <b><i>restart the tycoon</i></b> with a <b><i>50%% cash bonus</i></b>. You can rebirth multiple times to become a trillionaire!"
+        "Rebirthing allows you to <b><i>restart the tycoon</i></b> with a <b><i>2x cash bonus</i></b>. You can rebirth multiple times to become a trillionaire!"
         .. "\n\n"
-        .. "<b><i>Current Bonus: %s%%</i></b>"
-    ):format(KDKit.Humanize:money(bonus * 100, true))
+        .. "<b><i>Current Multiplier: %dx</i></b>"
+    ):format(KDKit.Humanize:money(bonus, true))
 end)
 
 function page:afterOpened()

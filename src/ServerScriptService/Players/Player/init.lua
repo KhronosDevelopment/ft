@@ -159,7 +159,7 @@ function Player:awardDeveloperProduct(product: DeveloperProductsConfiguration.Co
 end
 
 function Player:getRebirthCost()
-    return 10 + self.plot.rebirths
+    return 5_000_000 * 2.5 ^ self.plot.rebirths
 end
 
 function Player:rebirth()
