@@ -23,7 +23,7 @@ app.common.LRT.stats.money(function(value)
     local delta = value - lastValue
     lastValue = value
 
-    if delta > 0 then
+    if delta > 0 and lastValue ~= 0 then
         firstPositiveDeltaAt = math.min(firstPositiveDeltaAt, os.clock())
         table.insert(positiveDeltasInTheLastMinute, delta)
         updateMoneyPerSecond()
