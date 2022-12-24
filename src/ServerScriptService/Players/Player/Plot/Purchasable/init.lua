@@ -65,6 +65,7 @@ function Purchasable:__init(
         error("Purchasable is missing a button pad: " .. self.name)
     end
     self:restyleButton()
+    self.button.visual.gui.subtitle.Text = self.item:getSubtitle()
 
     if not self.item then
         error("Purchasable is missing an item: " .. self.name)

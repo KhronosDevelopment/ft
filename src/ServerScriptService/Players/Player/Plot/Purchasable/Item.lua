@@ -53,6 +53,16 @@ function Item:__init(purchasable: "Class.Player.Plot.Purchasable", instance: Mod
     self:disable()
 end
 
+function Item:getSubtitle()
+    if self.type == "dropper" then
+        return ("(+$%s)"):format(KDKit.Humanize:money(self.value))
+    elseif self.type == "upgrader" then
+        return ("(x%g)"):format(self.multiplier)
+    end
+
+    return ""
+end
+
 function Item:disable()
     debug.profilebegin("Item:disable()")
     self.enabled = false
