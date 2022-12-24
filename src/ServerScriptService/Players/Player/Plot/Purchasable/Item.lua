@@ -1,8 +1,12 @@
 local PhysicsService = game:GetService("PhysicsService")
+local Debris = game:GetService("Debris")
+local RunService = game:GetService("RunService")
 
 local KDKit = require(game.ReplicatedFirst:WaitForChild("KDKit"))
 local Item = KDKit.Class.new("Player.Plot.Purchasable.Item")
 Item.static.fruitFolder = workspace:WaitForChild("FRUITS")
+
+Item.static.droppers = {}
 
 function Item:__init(purchasable: "Class.Player.Plot.Purchasable", instance: Model)
     self.purchasable = purchasable
@@ -30,6 +34,8 @@ function Item:__init(purchasable: "Class.Player.Plot.Purchasable", instance: Mod
                 descendant.Anchored = false
             end
         end
+
+        table.insert(Item.droppers, self)
     elseif self.type == "upgrader" then
         self.toucher = self.instance.toucher
         self.multiplier = self.instance:GetAttribute("multiplier")
@@ -48,6 +54,7 @@ function Item:__init(purchasable: "Class.Player.Plot.Purchasable", instance: Mod
 end
 
 function Item:disable()
+    debug.profilebegin("Item:disable()")
     self.enabled = false
     self.instance.Parent = nil
 
@@ -63,42 +70,43 @@ function Item:disable()
 
         table.clear(self.droppedFruits)
     end
+    debug.profileend()
 end
 
 function Item:enable()
+    debug.profilebegin("Item:enable()")
     self.instance.Parent = workspace
     self.enabled = true
 
     if self.type == "dropper" then
-        local elapsed = math.huge -- so that the first drop is instant
-        self.connection = game:GetService("RunService").Heartbeat:Connect(function(dt)
-            elapsed += dt
-
-            if elapsed > self.seconds then
-                elapsed = 0
-                self:performDrop()
-            end
-        end)
+        self.nextDropAt = os.clock()
     elseif self.type == "upgrader" then
         self.connection = self.toucher.Touched:Connect(function(fruit)
+            debug.profilebegin("upgrader.Touched")
             while fruit and fruit.Parent ~= Item.fruitFolder do
                 fruit = fruit.Parent
             end
             if not fruit then
+                debug.profileend()
                 return
             end
 
             if fruit:GetAttribute("upgraded_by_" .. self.uuid) then
+                debug.profileend()
                 return
             end
 
             fruit:SetAttribute("value", fruit:GetAttribute("value") * self.multiplier)
             fruit:SetAttribute("upgraded_by_" .. self.uuid, true)
+            debug.profileend()
         end)
     end
+
+    debug.profileend()
 end
 
 function Item:performDrop()
+    debug.profilebegin("Item:performDrop()")
     assert(self.type == "dropper", "cannot perform drop for non-dropper")
 
     local fruit = self.fruit:Clone()
@@ -114,12 +122,24 @@ function Item:performDrop()
         end
     end
 
-    task.delay(180, function()
-        if fruit.Parent then
-            warn("DELETED AFTER 3 MINUTES")
-            fruit:Destroy()
-        end
-    end)
+    Debris:AddItem(fruit, 300)
+    debug.profileend()
 end
+
+function Item.static:cycle()
+    debug.profilebegin("Item.static:cycle()")
+    local now = os.clock()
+    for _, dropper in self.droppers do
+        if dropper.enabled and now >= dropper.nextDropAt then
+            dropper:performDrop()
+            dropper.nextDropAt = now + dropper.seconds
+        end
+    end
+    debug.profileend()
+end
+
+RunService.Heartbeat:Connect(function()
+    Item:cycle()
+end)
 
 return Item
