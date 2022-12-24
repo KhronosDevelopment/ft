@@ -1,7 +1,6 @@
 local KDKit = require(game:GetService("ReplicatedFirst"):WaitForChild("KDKit"))
 
-local Leaderboards = { folder = workspace:WaitForChild("LEADERBOARDS") }
-KDKit.Preload:ensureDescendants(Leaderboards.folder)
+local Leaderboards = {}
 
 type LeaderStat = {
     name: string,
@@ -26,11 +25,31 @@ function Leaderboards:apply(data: { LeaderStat }, gui: SurfaceGui)
     end
 end
 
+function Leaderboards:waitForGuis(): { SurfaceGui }
+    local guis: { SurfaceGui } = {}
+
+    while true do
+        for _, plot in workspace:WaitForChild("PLOTS"):GetChildren() do
+            if plot:IsA("Model") and plot:FindFirstChild("LEADERBOARD") then
+                table.insert(guis, plot.LEADERBOARD.gui)
+            end
+        end
+
+        if #guis == 6 then
+            return guis
+        else
+            table.clear(guis)
+            task.wait(1)
+        end
+    end
+end
+
 function Leaderboards:update()
+    local guis = self:waitForGuis()
     local leaderStats: { LeaderStat } = (KDKit.API.game / "leaderboards"):eGET()
 
-    for _, instance in self.folder:GetChildren() do
-        self:apply(leaderStats, instance.gui)
+    for _, gui in guis do
+        self:apply(leaderStats, gui)
     end
 end
 
