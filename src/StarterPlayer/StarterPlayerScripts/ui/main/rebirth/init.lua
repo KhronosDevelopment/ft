@@ -39,7 +39,7 @@ app.common.LRT.stats.rebirths(function(value)
     page.instance.window.inner.label.Text = (
         "Rebirthing allows you to <b><i>restart the tycoon</i></b> with a <b><i>2x cash bonus</i></b>. You can rebirth multiple times to become a trillionaire!"
         .. "\n\n"
-        .. "<b><i>Current Multiplier: %dx</i></b>"
+        .. "<b><i>Current Multiplier: %sx</i></b>"
     ):format(KDKit.Humanize:money(bonus, true))
 end)
 
