@@ -20,8 +20,7 @@ end
 updateMoneyPerSecond()
 
 local lastValue = 0
-app.common.LRT.stats.money(function(value)
-    value = value or 0
+app.common.LRV:listen("stats.money", function(value)
     local delta = value - lastValue
     lastValue = value
 
@@ -37,6 +36,6 @@ app.common.LRT.stats.money(function(value)
 
     page.instance.container.money.Text = "$" .. KDKit.Humanize:money(value, true)
     page.instance.container.moneyShadow.Text = page.instance.container.money.Text
-end)
+end, 0)
 
 return page

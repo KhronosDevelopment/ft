@@ -4,8 +4,6 @@ local Players = {}
 Players.list = {}
 Players.Player = require(script:WaitForChild("Player"))
 Players.folder = game:GetService("Players")
-Players.rt = {}
-KDKit.ReplicatedTable.players = Players.rt
 
 function Players:getUserId(something: any): number | nil
     if type(something) == "number" then

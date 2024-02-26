@@ -30,15 +30,13 @@ function Player:__init(instance: Player)
     self.kicked = false
 
     self.maid = KDKit.Maid.new()
+
+    self.rv = self.maid:give(KDKit.ReplicatedValue:get("player_" .. self.id, {}, self.instance))
+
     self.mutex = self.maid:give(KDKit.Mutex.new())
     self.character = self.maid:give(Player.Character.new(self))
     self.stats = self.maid:give(Player.Stats.new(self))
     self.plot = self.maid:give(Player.Plot.new(self))
-
-    self.rt = {
-        stats = self.stats.rt,
-    }
-    Players.rt[self.id] = self.rt
 
     self.remote = {
         user = nil,
@@ -86,7 +84,7 @@ function Player:initialize(): nil
             self.remote.user = user_response.user
             self.remote.session = user_response.session
 
-            self.rt.admin = self.remote.user.admin
+            self.rv:set("admin", self.remote.user.admin)
         end
 
         if player_success then
@@ -100,7 +98,7 @@ function Player:initialize(): nil
                     self:awardDeveloperProduct(product, false)
                 end
             end
-            self.rt.rebirthCost = self:getRebirthCost()
+            self.rv:set("rebirthCost", self:getRebirthCost())
             self.character:spawn()
             self.state = Player.STATES.PLAYING
             self:beginAutosaveCycle()
@@ -182,7 +180,7 @@ function Player:rebirth()
     end
     if self.plot:spendMoney(self:getRebirthCost()) then
         self.plot:rebirth()
-        self.rt.rebirthCost = self:getRebirthCost()
+        self.rv:set("rebirthCost", self:getRebirthCost())
         return true
     end
 

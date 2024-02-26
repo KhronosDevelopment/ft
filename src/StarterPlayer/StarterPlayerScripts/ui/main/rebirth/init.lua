@@ -18,30 +18,28 @@ page.buttons.submit = KDKit.GUI.Button
     :bind(Enum.KeyCode.ButtonX)
 
 local function updateSubmitEnabled()
-    if page.opened and (app.common.LRT.rebirthCost() or 1000000) <= (app.common.LRT.stats.money() or 0) then
+    if page.opened and app.common.LRV:evaluate("rebirthCost", 1000000) <= app.common.LRV:evaluate("stats.money", 0) then
         page.buttons.submit:enable()
     else
         page.buttons.submit:disable()
     end
 end
 
-app.common.LRT.rebirthCost(updateSubmitEnabled)
-app.common.LRT.stats.money(updateSubmitEnabled)
+app.common.LRV:listen("rebirthCost", updateSubmitEnabled)
+app.common.LRV:listen("stats.money", updateSubmitEnabled)
 
-app.common.LRT.rebirthCost(function(value)
-    page.instance.window.inner.cost.Text = "$" .. KDKit.Humanize:money(value or 0, true)
-end)
+app.common.LRV:listen("rebirthCost", function(value)
+    page.instance.window.inner.cost.Text = "$" .. KDKit.Humanize:money(value, true)
+end, 0)
 
-app.common.LRT.stats.rebirths(function(value)
-    value = value or 0
-
+app.common.LRV:listen("stats.rebirths", function(value)
     local bonus = 2 ^ value
     page.instance.window.inner.label.Text = (
         "Rebirthing allows you to <b><i>restart the tycoon</i></b> with a <b><i>2x cash bonus</i></b>. You can rebirth multiple times to become a trillionaire!"
         .. "\n\n"
         .. "<b><i>Current Multiplier: %sx</i></b>"
     ):format(KDKit.Humanize:money(bonus, true))
-end)
+end, 0)
 
 function page:afterOpened()
     updateSubmitEnabled()

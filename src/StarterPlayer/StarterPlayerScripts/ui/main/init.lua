@@ -5,5 +5,5 @@ return {
         BUTTON_PRESS = "BUTTON_PRESS",
     },
     LocalPlayer = game.Players.LocalPlayer,
-    LRT = KDKit.ReplicatedTable.players[game.Players.LocalPlayer.UserId],
+    LRV = KDKit.ReplicatedValue:get("player_" .. game.Players.LocalPlayer.UserId),
 }

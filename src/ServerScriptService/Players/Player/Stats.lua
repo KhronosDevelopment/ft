@@ -5,10 +5,7 @@ function Stats:__init(player)
     self.player = player
 
     self.maid = KDKit.Maid.new()
-    self.rt = {
-        money = 0,
-        rebirths = 0,
-    }
+    self.player.rv:set("stats", { money = 0, rebirths = 0 })
 
     self.instance = self.maid:give(Instance.new("Folder", self.player.instance))
     self.instance.Name = "leaderstats"
@@ -18,12 +15,12 @@ function Stats:__init(player)
 end
 
 function Stats:setMoney(value)
-    self.rt.money = value
+    self.player.rv:set("stats.money", value)
     self.instance.Money.Value = math.floor(value)
 end
 
 function Stats:setRebirths(rebirths)
-    self.rt.rebirths = rebirths
+    self.player.rv:set("stats.rebirths", rebirths)
     self.instance.Rebirths.Value = rebirths
 end
 
