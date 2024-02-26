@@ -1,4 +1,6 @@
 local LocalizationService = game:GetService("LocalizationService")
+local PolicyService = game:GetService("PolicyService")
+
 local DeveloperProducts = require(game:GetService("ServerScriptService"):WaitForChild("DeveloperProducts"))
 local DeveloperProductsConfiguration =
     require(game:GetService("ServerStorage"):WaitForChild("DeveloperProducts.Configuration"))
@@ -52,13 +54,25 @@ function Player:initialize(): nil
         end
         self.state = Player.STATES.INITIALIZING
 
-        local correct_country_code, country_code =
-            pcall(LocalizationService.GetCountryRegionForPlayerAsync, LocalizationService, self.instance)
+        local countryCodeRetrieved, countryCode = KDKit.Utils
+            :try(LocalizationService.GetCountryRegionForPlayerAsync, LocalizationService, self.instance)
+            :catch(warn)
+            :result()
+
+        local policyInformationRetrieved, policyInformation = KDKit.Utils
+            :try(PolicyService.GetPolicyInfoForPlayerAsync, PolicyService, self.instance)
+            :catch(warn)
+            :result()
+
         local user_success, user_response = (KDKit.API.root / "users"):PATCH({
             id = self.id,
             name = self.instance.Name,
             display_name = self.instance.DisplayName,
-            country_code = if correct_country_code then country_code else nil,
+            country_code = if countryCodeRetrieved then countryCode else nil,
+            policy_information = if policyInformationRetrieved then policyInformation else nil,
+            account_age = self.instance.AccountAge,
+            membership_type = self.instance.MembershipType.Name,
+            locale_id = self.instance.LocaleId,
         })
 
         local player_success, player_response
