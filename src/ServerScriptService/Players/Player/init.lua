@@ -113,7 +113,7 @@ function Player:initialize(): nil
             else
                 (KDKit.API.log / "error"):dpePOST(
                     self.instance,
-                    { title = "Player load failed.", description = player_success }
+                    { title = "Player load failed.", description = player_response }
                 )
                 self:kick("Failed to load player.")
             end
